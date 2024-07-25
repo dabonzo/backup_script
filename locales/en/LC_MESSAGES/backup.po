@@ -1,0 +1,248 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-26 00:13+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: command_runner.py:12
+msgid "Running command: {}"
+msgstr ""
+
+#: command_runner.py:17
+msgid "Command timed out: {}"
+msgstr ""
+
+#: config_loader.py:17
+msgid ""
+"Configuration file {} does not exist. Ensure the correct config file is "
+"present."
+msgstr ""
+
+#: config_loader.py:25
+msgid "The configuration file {} is not intended for this server ({})."
+msgstr ""
+
+#: main.py:23 backup_manager/backup_manager.py:46
+msgid "Backup Process Completed"
+msgstr ""
+
+#: main.py:27
+msgid "Backup script for server"
+msgstr ""
+
+#: main.py:28
+msgid "Enable verbose output"
+msgstr ""
+
+#: backup_manager/backup_manager.py:31
+msgid "Backup Process Started"
+msgstr ""
+
+#: backup_manager/backup_manager.py:36
+msgid "Backup started at {}"
+msgstr ""
+
+#: backup_manager/backup_manager.py:47
+msgid "Backup completed at {}"
+msgstr ""
+
+#: backup_manager/backup_manager.py:48
+msgid "Total backup duration: {}"
+msgstr ""
+
+#: backup_manager/database_backup.py:16 backup_manager/database_backup.py:17
+msgid "Database Backup"
+msgstr ""
+
+#: backup_manager/database_backup.py:18
+msgid "Starting database backup..."
+msgstr ""
+
+#: backup_manager/database_backup.py:25
+msgid "Error: Cannot list databases! See log for details at line {}."
+msgstr ""
+
+#: backup_manager/database_backup.py:36
+msgid "Skipping backup for database: {}"
+msgstr ""
+
+#: backup_manager/database_backup.py:41
+msgid "mysqldump: Got error:"
+msgstr ""
+
+#: backup_manager/database_backup.py:42
+msgid "Error: Database backup failed for {}! See log for details at line {}."
+msgstr ""
+
+#: backup_manager/database_backup.py:49
+msgid "Database {} backed up successfully."
+msgstr ""
+
+#: backup_manager/database_backup.py:50
+msgid "Database {} backed up successfully to {}."
+msgstr ""
+
+#: backup_manager/log_cleaner.py:19
+msgid "Removed old log file: {}"
+msgstr ""
+
+#: backup_manager/restic_backup.py:26
+msgid "repository is already locked"
+msgstr ""
+
+#: backup_manager/restic_backup.py:31 backup_manager/restic_backup.py:32
+msgid "Applying Retention Policy"
+msgstr ""
+
+#: backup_manager/restic_backup.py:33
+msgid "Applying retention policy..."
+msgstr ""
+
+#: backup_manager/restic_backup.py:36
+msgid ""
+"Error: Restic repository is locked! Cannot apply retention policy. Use "
+"`restic unlock` to unlock the repository."
+msgstr ""
+
+#: backup_manager/restic_backup.py:48
+msgid ""
+"Error: Retention policy application failed! See log for details at line {}."
+msgstr ""
+
+#: backup_manager/restic_backup.py:51
+msgid "Error: Retention policy application failed!"
+msgstr ""
+
+#: backup_manager/restic_backup.py:55
+msgid "Retention policy applied successfully."
+msgstr ""
+
+#: backup_manager/restic_backup.py:56
+msgid "Retention policy applied successfully in {}."
+msgstr ""
+
+#: backup_manager/restic_backup.py:71 backup_manager/restic_backup.py:72
+msgid "Backup"
+msgstr ""
+
+#: backup_manager/restic_backup.py:73
+msgid "Starting Restic {} backup..."
+msgstr ""
+
+#: backup_manager/restic_backup.py:80
+msgid "Error: Restic {} backup failed! See log for details at line {}."
+msgstr ""
+
+#: backup_manager/restic_backup.py:88
+msgid "Restic {} backup completed successfully."
+msgstr ""
+
+#: backup_manager/restic_backup.py:91
+msgid "Restic {} backup completed successfully in {}."
+msgstr ""
+
+#: backup_manager/restic_backup.py:92
+msgid "processed"
+msgstr ""
+
+#: backup_manager/restic_backup.py:93 backup_manager/restic_backup.py:96
+msgid "Added to the repository:"
+msgstr ""
+
+#: backup_manager/restic_backup.py:97
+msgid " stored"
+msgstr ""
+
+#: backup_manager/restic_backup.py:99 backup_manager/restic_backup.py:102
+msgid "Files processed: {}, Data transferred: {}, Data stored: {}"
+msgstr ""
+
+#: backup_manager/restic_backup.py:106 backup_manager/restic_backup.py:108
+msgid "Files processed: {}, Backup size: unknown"
+msgstr ""
+
+#: backup_manager/restic_backup.py:110
+msgid "Getting Restic Stats"
+msgstr ""
+
+#: backup_manager/restic_backup.py:114
+msgid "Total Size"
+msgstr ""
+
+#: backup_manager/restic_backup.py:117 backup_manager/restic_backup.py:119
+msgid "Restic repository uncompressed size: {}"
+msgstr ""
+
+#: backup_manager/restic_backup.py:121 backup_manager/restic_backup.py:122
+msgid "Restic repository uncompressed size: unknown"
+msgstr ""
+
+#: backup_manager/restic_backup.py:125
+msgid ""
+"Error: Getting Restic repository stats failed! See log for details at line "
+"{}."
+msgstr ""
+
+#: backup_manager/restic_backup.py:131
+msgid "Getting Restic Repository Size"
+msgstr ""
+
+#: backup_manager/restic_backup.py:136 backup_manager/restic_backup.py:138
+msgid "Restic repository compressed size: {}"
+msgstr ""
+
+#: backup_manager/restic_backup.py:141
+msgid ""
+"Error: Getting Restic repository size failed! See log for details at line {}."
+msgstr ""
+
+#: backup_manager/size_calculator.py:24
+msgid "Calculating Total Size of Backup Folder"
+msgstr ""
+
+#: backup_manager/size_calculator.py:27
+msgid "Total size of backup folder: {:.2f} MB"
+msgstr ""
+
+#: backup_manager/software_list_generator.py:15
+#: backup_manager/software_list_generator.py:16
+msgid "Generating List of Installed Software"
+msgstr ""
+
+#: backup_manager/software_list_generator.py:17
+msgid "Generating list of installed software..."
+msgstr ""
+
+#: backup_manager/software_list_generator.py:31
+msgid ""
+"Error: Generating list of installed software failed! See log for details at "
+"line {}."
+msgstr ""
+
+#: backup_manager/software_list_generator.py:38
+#: backup_manager/software_list_generator.py:39
+msgid "List of installed software generated successfully."
+msgstr ""
+
+#: backup_manager/software_list_generator.py:42
+msgid ""
+"Error: Unsupported distribution for generating software list! See log for "
+"details at line {}."
+msgstr ""
+
+#: backup_manager/software_list_generator.py:45
+msgid "Error: Unsupported distribution for generating software list!"
+msgstr ""
