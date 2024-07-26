@@ -29,7 +29,7 @@ class BackupManager:
 
         current_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
         self.email_body = (
-            f"<html><body><h1>{_('Backup Summary for')} {self.config.SERVER_NAME} - {current_time}</h1><pre>"
+            f"<html><body><h2>{_('Backup Summary for')} {self.config.SERVER_NAME} - {current_time}</h2>"
         )
         self.logger.log(f"{_('Backup started at')} {current_time}")
 
@@ -40,18 +40,18 @@ class BackupManager:
         self.log_cleaner.clean(self.config.LOG_DIR, self.config.RETENTION_DAYS)
 
         end_time = datetime.now()
-        total_duration = end_time - start_time
+        total_duration = self.format_duration(end_time - start_time)
         end_time_str = end_time.strftime('%Y-%m-%d %H:%M:%S')
 
         self.logger.log(_("Backup Process Completed"), section=True)
         self.logger.log(f"{_('Backup completed at')} {end_time_str}")
         self.logger.log(f"{_('Total backup duration')} {total_duration}")
 
-        self.email_body += f"\n<h2>{_('Backup Time Details')}</h2>\n"
-        self.email_body += f"{_('Backup started at')}: {current_time}\n"
-        self.email_body += f"{_('Backup completed at')}: {end_time_str}\n"
-        self.email_body += f"{_('Total backup duration')}: {total_duration}\n"
-        self.email_body += "</pre></body></html>"
+        self.email_body += f"<h2>{_('Backup Time Details')}</h2>"
+        self.email_body += f"<p>{_('Backup started at')}: {current_time}</p>"
+        self.email_body += f"<p>{_('Backup completed at')}: {end_time_str}</p>"
+        self.email_body += f"<p>{_('Total backup duration')}: {total_duration}</p>"
+        self.email_body += "</body></html>"
 
         with open(self.config.EMAIL_BODY_PATH, "w") as email_file:
             email_file.write(self.email_body)
@@ -69,3 +69,15 @@ class BackupManager:
                                       self.config.EMAIL_BODY_PATH)
 
         os.remove(self.config.EMAIL_BODY_PATH)
+
+    def format_duration(self, duration):
+        total_seconds = int(duration.total_seconds())
+        if total_seconds < 60:
+            return f"{total_seconds} seconds"
+        elif total_seconds < 3600:
+            minutes, seconds = divmod(total_seconds, 60)
+            return f"{minutes} minutes {seconds} seconds"
+        else:
+            hours, remainder = divmod(total_seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            return f"{hours} hours {minutes} minutes {seconds}"

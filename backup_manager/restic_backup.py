@@ -25,7 +25,7 @@ class ResticBackup:
         return False
 
     def apply_retention_policy(self, repository, password_file):
-        self.log_and_email(_("Applying Retention Policy"), section=True)
+        self.log_and_email(_("Retention Policy"), section=True)
         self.log_and_email(_("Applying retention policy..."))
         if self.is_restic_locked(repository, password_file):
             error_message = _(
@@ -83,7 +83,7 @@ class ResticBackup:
                 else:
                     self.log_and_email(_("Files processed: {}, Backup size: unknown").format(files_processed))
 
-            self.log_and_email(_("Gathering Restic Repository Information"), section=True)
+            self.log_and_email(_("Backup Size Information"), section=True)
             uncompressed_size = self.get_uncompressed_size()
             compressed_size = self.get_compressed_size()
             total_backup_size = self.calculate_total_backup_size()
@@ -143,12 +143,12 @@ class ResticBackup:
 
     def log_and_email(self, message, section=False, error=False):
         if section:
-            formatted_message = f"\n{'#' * 22}\n# {message.center(18)} #\n{'#' * 22}\n"
+            formatted_message = f"<h2>{message}</h2>"
         else:
-            formatted_message = message
+            formatted_message = f"<p>{message}</p>"
 
         if error:
-            formatted_message = f"<strong style='color: red;'>{formatted_message}</strong>\n"
+            formatted_message = f"<strong style='color: red;'>{formatted_message}</strong><br>"
             self.backup_manager.error_lines.append(formatted_message)
             self.backup_manager.backup_success = False
 

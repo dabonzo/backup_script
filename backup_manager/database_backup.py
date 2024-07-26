@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-
 class DatabaseBackup:
     def __init__(self, config, logger, command_runner, backup_manager):
         self.config = config
@@ -21,7 +20,7 @@ class DatabaseBackup:
         if return_code != 0:
             error_message = _("Error: Cannot list databases! See log for details at line {}.").format(
                 len(open(self.config.LOG_FILE).readlines()) + 1)
-            self.backup_manager.email_body += f"<strong style='color: red;'>{error_message}</strong>\n"
+            self.backup_manager.email_body += f"<strong style='color: red;'>{error_message}</strong><br>\n"
             self.logger.log(f"Error: Cannot list databases! {stderr}")
             self.backup_manager.error_lines.append(error_message)
             self.backup_manager.backup_success = False
@@ -38,10 +37,10 @@ class DatabaseBackup:
                 if return_code != 0 or _("mysqldump: Got error:") in stderr:
                     error_message = _("Error: Database backup failed for {}! See log for details at line {}.").format(
                         db, len(open(self.config.LOG_FILE).readlines()) + 1)
-                    self.backup_manager.email_body += f"<strong style='color: red;'>{error_message}</strong>\n"
+                    self.backup_manager.email_body += f"<strong style='color: red;'>{error_message}</strong><br>\n"
                     self.logger.log(f"Error: Database backup failed for {db}! {stderr}")
                     self.backup_manager.error_lines.append(error_message)
                     self.backup_manager.backup_success = False
                 else:
-                    self.backup_manager.email_body += _("Database {} backed up successfully.").format(db) + "\n"
+                    self.backup_manager.email_body += _("Database {} backed up successfully.").format(db) + "<br>\n"
                     self.logger.log(_("Database {} backed up successfully to {}.").format(db, backup_file))
