@@ -9,11 +9,7 @@ class RepositoryInitializer:
         self.config = config
 
     def ensure_directories(self):
-        directories = [
-            self.config.BASE_BACKUP_DIR,
-            self.config.MYSQL_BACKUP_DIR,
-            self.config.LOG_DIR
-        ]
+        directories = [self.config.BASE_BACKUP_DIR, self.config.MYSQL_BACKUP_DIR, self.config.LOG_DIR]
         for directory in directories:
             if not os.path.exists(directory):
                 os.makedirs(directory, exist_ok=True)
@@ -22,10 +18,9 @@ class RepositoryInitializer:
         alphabet = string.ascii_letters + string.digits + '-_'
         while True:
             restic_password = ''.join(secrets.choice(alphabet) for _ in range(20))
-            if (sum(c.islower() for c in restic_password) >= 4 and
-                    sum(c.isupper() for c in restic_password) >= 4 and
-                    sum(c.isdigit() for c in restic_password) >= 4 and
-                    sum(c in '-_' for c in restic_password) >= 2):
+            if (sum(c.islower() for c in restic_password) >= 4 and sum(
+                c.isupper() for c in restic_password) >= 4 and sum(c.isdigit() for c in restic_password) >= 4 and sum(
+                c in '-_' for c in restic_password) >= 2):
                 break
         with open(self.config.RESTIC_PASSWORD_FILE, "w") as pw_file:
             pw_file.write(restic_password)

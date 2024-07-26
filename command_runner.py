@@ -1,7 +1,6 @@
 import subprocess
+
 from i18n import _
-
-
 
 
 class CommandRunner:

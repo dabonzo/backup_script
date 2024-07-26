@@ -1,8 +1,8 @@
 import os
 from datetime import datetime
-from utils import format_duration, log_and_email
-from i18n import _  # Import the _ variable
 
+from i18n import _  # Import the _ variable
+from utils import format_duration, log_and_email
 
 
 class ResticBackup:
@@ -81,7 +81,8 @@ class ResticBackup:
                 log_and_email(self.backup_manager, self.logger,
                               _("Restic {} backup completed successfully in {}.").format(backup_type, restic_duration))
                 files_processed = stdout.count("processed")
-                backup_size_line = next((line for line in stdout.splitlines() if "Added to the repository:" in line), None)
+                backup_size_line = next((line for line in stdout.splitlines() if "Added to the repository:" in line),
+                                        None)
                 if backup_size_line:
                     data_transferred, data_stored = self.extract_backup_size(backup_size_line)
                     log_and_email(self.backup_manager, self.logger,

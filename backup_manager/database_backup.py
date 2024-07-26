@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
+
 from i18n import _
+
 
 class DatabaseBackup:
     def __init__(self, config, logger, command_runner, backup_manager):

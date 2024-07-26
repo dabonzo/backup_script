@@ -1,15 +1,14 @@
 import argparse
-import gettext
-import socket
 import os
-import sys
+import socket
 
 from backup_manager.backup_manager import BackupManager
 from backup_manager.repository_initializer import RepositoryInitializer
 from command_runner import CommandRunner
 from config_loader import ConfigLoader
-from logger import Logger
 from i18n import _
+from logger import Logger
+
 
 def main():
     # Determine the directory where the script is located
@@ -24,9 +23,6 @@ def main():
     # Load the configuration file dynamically based on the server's FQDN
     config_loader = ConfigLoader(server_name)
     config = config_loader.config
-
-
-
 
     # Setup argument parser
     parser = argparse.ArgumentParser(description=_("Backup script for server"))
@@ -47,6 +43,7 @@ def main():
     # Initialize and run the backup manager
     backup_manager = BackupManager(config, logger, command_runner)
     backup_manager.backup()
+
 
 if __name__ == "__main__":
     main()

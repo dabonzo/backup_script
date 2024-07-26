@@ -1,6 +1,6 @@
 import subprocess
-from i18n import _
 
+from i18n import _
 
 
 class SoftwareListGenerator:
