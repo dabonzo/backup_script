@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="793975d2-74fd-4647-9ac3-774f0e10b648" name="dfgd">
-        <fileTransfer rootFolder="/backup/script" accessType="SFTP" host="redgas008" port="30022" sshConfigId="69447fc6-5f92-4d76-9af1-bae49cbff443" sshConfig="root@redgas008:30022 key" keyPair="true">
+      <webServer id="793975d2-74fd-4647-9ac3-774f0e10b648" name="redgas008_backup">
+        <fileTransfer accessType="SFTP" host="redgas008" port="30022" sshConfigId="69447fc6-5f92-4d76-9af1-bae49cbff443" sshConfig="root@redgas008:30022 key" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" isUseRsync="true" />
           </advancedOptions>

@@ -5,8 +5,8 @@ from backup_manager.database_backup import DatabaseBackup
 from backup_manager.email_notifier import EmailNotifier
 from backup_manager.log_cleaner import LogCleaner
 from backup_manager.restic_backup import ResticBackup
-from backup_manager.size_calculator import SizeCalculator
 from backup_manager.software_list_generator import SoftwareListGenerator
+
 
 class BackupManager:
     def __init__(self, config, logger, command_runner):
@@ -20,7 +20,7 @@ class BackupManager:
         self.database_backup = DatabaseBackup(config, logger, command_runner, self)
         self.restic_backup = ResticBackup(config, logger, command_runner, self)
         self.software_list_generator = SoftwareListGenerator(config, logger, command_runner, self)
-        self.size_calculator = SizeCalculator(config, logger, command_runner, self)
+
         self.log_cleaner = LogCleaner(config, logger)
 
     def backup(self):
@@ -36,7 +36,7 @@ class BackupManager:
         self.database_backup.backup()
         self.restic_backup.run_backup()
         self.software_list_generator.generate()
-        self.size_calculator.calculate()
+
         self.log_cleaner.clean(self.config.LOG_DIR, self.config.RETENTION_DAYS)
 
         end_time = datetime.now()
@@ -58,11 +58,14 @@ class BackupManager:
 
         email_subject = f"{_('Backup')} {'Success' if self.backup_success else _('Failed')} {_('for')} {self.config.SERVER_NAME} - {datetime.now().strftime('%Y-%m-%d')}"
 
-        email_notifier = EmailNotifier(self.config.SMTP_SERVER, self.config.SMTP_PORT, self.config.SMTP_USERNAME, self.config.SMTP_PASSWORD)
+        email_notifier = EmailNotifier(self.config.SMTP_SERVER, self.config.SMTP_PORT, self.config.SMTP_USERNAME,
+                                       self.config.SMTP_PASSWORD)
 
         if not self.backup_success:
-            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH, self.config.LOG_FILE)
+            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM,
+                                      self.config.EMAIL_BODY_PATH, self.config.LOG_FILE)
         else:
-            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH)
+            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM,
+                                      self.config.EMAIL_BODY_PATH)
 
         os.remove(self.config.EMAIL_BODY_PATH)
