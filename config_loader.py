@@ -1,5 +1,6 @@
 import importlib.util
 import os
+from i18n import _
 
 
 class ConfigLoader:

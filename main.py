@@ -9,6 +9,7 @@ from backup_manager.repository_initializer import RepositoryInitializer
 from command_runner import CommandRunner
 from config_loader import ConfigLoader
 from logger import Logger
+from i18n import _
 
 def main():
     # Determine the directory where the script is located
@@ -24,12 +25,7 @@ def main():
     config_loader = ConfigLoader(server_name)
     config = config_loader.config
 
-    # Set up translation
-    # locales_dir = os.path.join(script_dir, 'locales')
-    # Set up translations
-    lang_translations = gettext.translation('backup', localedir='locales', languages=['de'], fallback=True)
-    lang_translations.install()
-    _ = lang_translations.gettext
+
 
 
     # Setup argument parser

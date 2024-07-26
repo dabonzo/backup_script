@@ -6,6 +6,9 @@ from backup_manager.email_notifier import EmailNotifier
 from backup_manager.log_cleaner import LogCleaner
 from backup_manager.restic_backup import ResticBackup
 from backup_manager.software_list_generator import SoftwareListGenerator
+from utils import format_duration
+from i18n import _
+
 
 
 class BackupManager:
@@ -40,7 +43,7 @@ class BackupManager:
         self.log_cleaner.clean(self.config.LOG_DIR, self.config.RETENTION_DAYS)
 
         end_time = datetime.now()
-        total_duration = self.format_duration(end_time - start_time)
+        total_duration = format_duration(end_time - start_time)
         end_time_str = end_time.strftime('%Y-%m-%d %H:%M:%S')
 
         self.logger.log(_("Backup Process Completed"), section=True)
@@ -70,14 +73,3 @@ class BackupManager:
 
         os.remove(self.config.EMAIL_BODY_PATH)
 
-    def format_duration(self, duration):
-        total_seconds = int(duration.total_seconds())
-        if total_seconds < 60:
-            return f"{total_seconds} seconds"
-        elif total_seconds < 3600:
-            minutes, seconds = divmod(total_seconds, 60)
-            return f"{minutes} minutes {seconds} seconds"
-        else:
-            hours, remainder = divmod(total_seconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            return f"{hours} hours {minutes} minutes {seconds}"

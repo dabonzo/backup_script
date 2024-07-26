@@ -1,4 +1,6 @@
 import subprocess
+from i18n import _
+
 
 
 
