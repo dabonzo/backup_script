@@ -1,8 +1,5 @@
-import gettext
 import os
 from datetime import datetime
-
-_ = gettext.gettext
 
 
 class ResticBackup:

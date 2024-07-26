@@ -1,7 +1,4 @@
-import gettext
 import os
-
-_ = gettext.gettext
 
 
 class SizeCalculator:
@@ -23,5 +20,10 @@ class SizeCalculator:
     def calculate(self):
         self.logger.log(_("Calculating Total Size of Backup Folder"), section=True)
         backup_dir_size = self.get_dir_size(self.config.BASE_BACKUP_DIR)
-        self.backup_manager.email_body += f"<h2>{_('Total Size of Backup Folder')}</h2>\n{_('Total size of backup folder')}: {backup_dir_size / (1024 * 1024):.2f} MB\n"
-        self.logger.log(_("Total size of backup folder: {:.2f} MB").format(backup_dir_size / (1024 * 1024)))
+        size_in_mb = backup_dir_size / (1024 * 1024)
+
+        size_message = _("Total size of backup folder: {:.2f} MB").format(size_in_mb)
+
+        self.backup_manager.email_body += f"<h2>{_('Total Size of Backup Folder')}</h2>\n{size_message}\n"
+        self.logger.log(size_message)
+

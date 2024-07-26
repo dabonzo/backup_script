@@ -1,7 +1,5 @@
 import subprocess
-import gettext
 
-_ = gettext.gettext
 
 
 class CommandRunner:

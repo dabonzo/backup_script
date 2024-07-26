@@ -1,8 +1,5 @@
-import gettext
 import importlib.util
 import os
-
-_ = gettext.gettext
 
 
 class ConfigLoader:
