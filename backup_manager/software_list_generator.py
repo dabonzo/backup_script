@@ -1,7 +1,4 @@
-import gettext
 import subprocess
-
-_ = gettext.gettext
 
 
 class SoftwareListGenerator:

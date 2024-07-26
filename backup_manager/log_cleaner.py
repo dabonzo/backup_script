@@ -1,8 +1,5 @@
 import os
 from datetime import datetime, timedelta
-import gettext
-
-_ = gettext.gettext
 
 
 class LogCleaner:

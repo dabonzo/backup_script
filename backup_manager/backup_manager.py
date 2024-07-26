@@ -1,15 +1,12 @@
-from backup_manager.database_backup import DatabaseBackup
-from backup_manager.restic_backup import ResticBackup
-from backup_manager.software_list_generator import SoftwareListGenerator
-from backup_manager.size_calculator import SizeCalculator
-from backup_manager.log_cleaner import LogCleaner
-from backup_manager.email_notifier import EmailNotifier
-from datetime import datetime
 import os
-import gettext
+from datetime import datetime
 
-_ = gettext.gettext
-
+from backup_manager.database_backup import DatabaseBackup
+from backup_manager.email_notifier import EmailNotifier
+from backup_manager.log_cleaner import LogCleaner
+from backup_manager.restic_backup import ResticBackup
+from backup_manager.size_calculator import SizeCalculator
+from backup_manager.software_list_generator import SoftwareListGenerator
 
 class BackupManager:
     def __init__(self, config, logger, command_runner):
@@ -31,9 +28,10 @@ class BackupManager:
         self.logger.log(_("Backup Process Started"), section=True)
 
         current_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
-        self.email_body = (f"<html><body><h1>{_('Backup Summary for')} {self.config.SERVER_NAME} - {current_time}</h1"
-                           f"><pre>")
-        self.logger.log(_("Backup started at {}").format(current_time))
+        self.email_body = (
+            f"<html><body><h1>{_('Backup Summary for')} {self.config.SERVER_NAME} - {current_time}</h1><pre>"
+        )
+        self.logger.log(f"{_('Backup started at')} {current_time}")
 
         self.database_backup.backup()
         self.restic_backup.run_backup()
@@ -43,13 +41,15 @@ class BackupManager:
 
         end_time = datetime.now()
         total_duration = end_time - start_time
+        end_time_str = end_time.strftime('%Y-%m-%d %H:%M:%S')
+
         self.logger.log(_("Backup Process Completed"), section=True)
-        self.logger.log(_("Backup completed at {}").format(end_time.strftime('%Y-%m-%d %H:%M:%S')))
-        self.logger.log(_("Total backup duration: {}").format(total_duration))
+        self.logger.log(f"{_('Backup completed at')} {end_time_str}")
+        self.logger.log(f"{_('Total backup duration')} {total_duration}")
 
         self.email_body += f"\n<h2>{_('Backup Time Details')}</h2>\n"
-        self.email_body += f"{_('Backup started at')}: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-        self.email_body += f"{_('Backup completed at')}: {end_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        self.email_body += f"{_('Backup started at')}: {current_time}\n"
+        self.email_body += f"{_('Backup completed at')}: {end_time_str}\n"
         self.email_body += f"{_('Total backup duration')}: {total_duration}\n"
         self.email_body += "</pre></body></html>"
 
@@ -58,14 +58,11 @@ class BackupManager:
 
         email_subject = f"{_('Backup')} {'Success' if self.backup_success else _('Failed')} {_('for')} {self.config.SERVER_NAME} - {datetime.now().strftime('%Y-%m-%d')}"
 
-        email_notifier = EmailNotifier(self.config.SMTP_SERVER, self.config.SMTP_PORT, self.config.SMTP_USERNAME,
-                                       self.config.SMTP_PASSWORD)
+        email_notifier = EmailNotifier(self.config.SMTP_SERVER, self.config.SMTP_PORT, self.config.SMTP_USERNAME, self.config.SMTP_PASSWORD)
 
         if not self.backup_success:
-            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM,
-                                      self.config.EMAIL_BODY_PATH, self.config.LOG_FILE)
+            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH, self.config.LOG_FILE)
         else:
-            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM,
-                                      self.config.EMAIL_BODY_PATH)
+            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH)
 
         os.remove(self.config.EMAIL_BODY_PATH)
