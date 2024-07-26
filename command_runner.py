@@ -1,7 +1,7 @@
+# command_runner.py
+
 import subprocess
-
 from i18n import _
-
 
 class CommandRunner:
     def __init__(self, logger):

@@ -89,7 +89,7 @@ Runs shell commands with logging.
 
 Loads configuration dynamically based on the server's FQDN.
 
-### i18n_setup.py
+### i18n.py
 
 Sets up internationalization.
 

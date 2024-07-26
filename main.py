@@ -1,14 +1,9 @@
+# main.py
 import argparse
-import os
 import socket
-
-from backup_manager.backup_manager import BackupManager
-from backup_manager.repository_initializer import RepositoryInitializer
-from command_runner import CommandRunner
-from config_loader import ConfigLoader
-from i18n import _
-from logger import Logger
-
+import os
+import sys
+from i18n import setup_translation
 
 def main():
     # Determine the directory where the script is located
@@ -21,8 +16,18 @@ def main():
     # Determine the server's fully qualified domain name (FQDN)
     server_name = socket.getfqdn()
     # Load the configuration file dynamically based on the server's FQDN
+    from config_loader import ConfigLoader  # Import after setting up translation
     config_loader = ConfigLoader(server_name)
     config = config_loader.config
+
+    # Setup translation
+    setup_translation(config.LANGUAGE)
+
+    # Now you can import other modules that use _
+    from backup_manager.backup_manager import BackupManager
+    from backup_manager.repository_initializer import RepositoryInitializer
+    from command_runner import CommandRunner
+    from logger import Logger
 
     # Setup argument parser
     parser = argparse.ArgumentParser(description=_("Backup script for server"))
@@ -43,7 +48,6 @@ def main():
     # Initialize and run the backup manager
     backup_manager = BackupManager(config, logger, command_runner)
     backup_manager.backup()
-
 
 if __name__ == "__main__":
     main()

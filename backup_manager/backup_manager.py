@@ -6,8 +6,9 @@ from backup_manager.email_notifier import EmailNotifier
 from backup_manager.log_cleaner import LogCleaner
 from backup_manager.restic_backup import ResticBackup
 from backup_manager.software_list_generator import SoftwareListGenerator
-from i18n import _
 from utils import format_duration
+from i18n import get_translation
+_ = get_translation()
 
 
 class BackupManager:
@@ -30,7 +31,7 @@ class BackupManager:
         self.logger.log(_("Backup Process Started"), section=True)
 
         current_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
-        self.email_body = (f"<html><body><h2>{_('Backup Summary for')} {self.config.SERVER_NAME} - {current_time}</h2>")
+        self.email_body = f"<html><body><h2>{_('Backup Summary for')} {self.config.SERVER_NAME} - {current_time}</h2>"
         self.logger.log(f"{_('Backup started at')} {current_time}")
 
         self.database_backup.backup()
