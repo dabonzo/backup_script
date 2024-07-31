@@ -14,9 +14,9 @@ class SoftwareListGenerator:
         self.logger.log(_("Generating List of Installed Software"), section=True)
         self.backup_manager.email_body += "<h2>" + _("Generating List of Installed Software") + "</h2>\n"
         self.logger.log(_("Generating list of installed software..."))
-        distro = subprocess.run(['lsb_release', '-is'], capture_output=True, text=True).stdout.strip()
+        distro = subprocess.run(['/usr/bin/lsb_release', '-is'], capture_output=True, text=True).stdout.strip()
         if distro in ['Ubuntu', 'Debian']:
-            command = "dpkg --get-selections"
+            command = "/usr/bin/dpkg --get-selections"
         elif distro in ['CentOS', 'RedHatEnterpriseServer', 'Fedora']:
             command = "rpm -qa"
         else:
