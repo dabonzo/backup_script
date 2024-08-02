@@ -1,3 +1,5 @@
+# backup_manager/email_notifier.py
+
 import os
 import smtplib
 from email import encoders
@@ -5,15 +7,32 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-
 class EmailNotifier:
+    """
+    Class to handle sending notification emails.
+    """
     def __init__(self, smtp_server, smtp_port, smtp_username, smtp_password):
+        """
+        Initialize the EmailNotifier class.
+        :param smtp_server: SMTP server address.
+        :param smtp_port: SMTP server port.
+        :param smtp_username: SMTP username.
+        :param smtp_password: SMTP password.
+        """
         self.smtp_server = smtp_server
         self.smtp_port = smtp_port
         self.smtp_username = smtp_username
         self.smtp_password = smtp_password
 
     def send_email(self, subject, to, from_, body_path, attachment_path=None):
+        """
+        Send an email with optional attachment.
+        :param subject: Email subject.
+        :param to: Recipient email address.
+        :param from_: Sender email address.
+        :param body_path: Path to the email body file.
+        :param attachment_path: Path to the attachment file.
+        """
         with open(body_path, "r") as email_file:
             body = email_file.read()
 

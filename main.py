@@ -5,6 +5,9 @@ import os
 from i18n import setup_translation
 
 def main():
+    """
+    Main function to execute the backup script.
+    """
     # Determine the directory where the script is located
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(script_dir)  # Change the working directory to the script directory
@@ -14,6 +17,7 @@ def main():
 
     # Determine the server's fully qualified domain name (FQDN)
     server_name = socket.getfqdn()
+
     # Load the configuration file dynamically based on the server's FQDN
     from config_loader import ConfigLoader  # Import after setting up translation
     config_loader = ConfigLoader(server_name)

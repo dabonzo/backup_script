@@ -1,17 +1,30 @@
+# backup_manager/database_backup.py
 import os
 from datetime import datetime
 
 from i18n import _
 
-
 class DatabaseBackup:
+    """
+    Class to handle database backup operations.
+    """
     def __init__(self, config, logger, command_runner, backup_manager):
+        """
+        Initialize the DatabaseBackup class.
+        :param config: Configuration object containing backup settings.
+        :param logger: Logger object for logging messages.
+        :param command_runner: CommandRunner object to execute shell commands.
+        :param backup_manager: BackupManager object to manage backup operations.
+        """
         self.config = config
         self.logger = logger
         self.command_runner = command_runner
         self.backup_manager = backup_manager
 
     def backup(self):
+        """
+        Perform the database backup operation.
+        """
         self.logger.log(_("Database Backup"), section=True)
         self.backup_manager.email_body += "<h2>" + _("Database Backup") + "</h2>\n"
         self.logger.log(_("Starting database backup..."))

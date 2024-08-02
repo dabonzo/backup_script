@@ -1,3 +1,4 @@
+# backup_manager/backup_manager.py
 import os
 from datetime import datetime
 
@@ -10,9 +11,17 @@ from utils import format_duration
 from i18n import get_translation
 _ = get_translation()
 
-
 class BackupManager:
+    """
+    Class to manage the backup operations.
+    """
     def __init__(self, config, logger, command_runner):
+        """
+        Initialize the BackupManager class.
+        :param config: Configuration object containing backup settings.
+        :param logger: Logger object for logging messages.
+        :param command_runner: CommandRunner object to execute shell commands.
+        """
         self.config = config
         self.logger = logger
         self.command_runner = command_runner
@@ -27,6 +36,9 @@ class BackupManager:
         self.log_cleaner = LogCleaner(config, logger)
 
     def backup(self):
+        """
+        Perform the backup operations.
+        """
         start_time = datetime.now()
         self.logger.log(_("Backup Process Started"), section=True)
 
@@ -59,14 +71,11 @@ class BackupManager:
 
         email_subject = f"{_('Backup')} {'Success' if self.backup_success else _('Failed')} {_('for')} {self.config.SERVER_NAME} - {datetime.now().strftime('%Y-%m-%d')}"
 
-        email_notifier = EmailNotifier(self.config.SMTP_SERVER, self.config.SMTP_PORT, self.config.SMTP_USERNAME,
-                                       self.config.SMTP_PASSWORD)
+        email_notifier = EmailNotifier(self.config.SMTP_SERVER, self.config.SMTP_PORT, self.config.SMTP_USERNAME, self.config.SMTP_PASSWORD)
 
         if not self.backup_success:
-            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM,
-                                      self.config.EMAIL_BODY_PATH, self.config.LOG_FILE)
+            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH, self.config.LOG_FILE)
         else:
-            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM,
-                                      self.config.EMAIL_BODY_PATH)
+            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH)
 
         os.remove(self.config.EMAIL_BODY_PATH)
