@@ -1,25 +1,25 @@
 # backup_manager/database_backup.py
 import os
+import random
 from datetime import datetime
+from .base_backup import BaseBackup
 
-from i18n import _
 
-class DatabaseBackup:
+class DatabaseBackup(BaseBackup):
     """
     Class to handle database backup operations.
     """
+
     def __init__(self, config, logger, command_runner, backup_manager):
         """
         Initialize the DatabaseBackup class.
-        :param config: Configuration object.
-        :param logger: Logger object.
-        :param command_runner: CommandRunner object.
-        :param backup_manager: BackupManager object.
+        :param config: Configuration object containing backup settings.
+        :param logger: Logger object for logging messages.
+        :param command_runner: CommandRunner object to execute shell commands.
+        :param backup_manager: BackupManager object to manage backup operations.
         """
-        self.config = config
-        self.logger = logger
+        super().__init__(config, logger, backup_manager)
         self.command_runner = command_runner
-        self.backup_manager = backup_manager
 
     def backup(self):
         """
@@ -31,6 +31,14 @@ class DatabaseBackup:
         backup_date = datetime.now().strftime("%Y-%m-%d")
         db_backup_dir = os.path.join(self.config.MYSQL_BACKUP_DIR, backup_date)
         os.makedirs(db_backup_dir, exist_ok=True)
+
+        # Simulate failure
+        simulate_failure = self.config.SIMULATE_FAILURES # and random.choice([True, False])
+
+        if simulate_failure:
+            self._simulate_failure(db_backup_dir)
+            return
+
         return_code, stdout, stderr = self.command_runner.run(
             f"/usr/bin/mysql -u {self.config.MYSQL_USER} -p{self.config.MYSQL_PASSWORD} -e 'SHOW DATABASES;'")
         if return_code != 0:
@@ -38,17 +46,17 @@ class DatabaseBackup:
         else:
             self._backup_databases(stdout.split()[1:], db_backup_dir)
 
-    def _handle_error(self, message, stderr):
+    def _simulate_failure(self, db_backup_dir):
         """
-        Handle an error during the backup process.
-        :param message: Error message.
-        :param stderr: Error output.
+        Simulate a failure in the database backup process.
+        :param db_backup_dir: Directory where the backup files would be stored.
         """
-        error_message = _(message + " See log for details at line {}.").format(len(open(self.config.LOG_FILE).readlines()) + 1)
-        self.backup_manager.email_body += f"<strong style='color: red;'>{error_message}</strong><br>\n"
-        self.logger.log(f"{message} {stderr}")
-        self.backup_manager.error_lines.append(error_message)
-        self.backup_manager.backup_success = False
+        non_existent_db = "non_existent_db"
+        self.logger.log(_("Simulating failure for database: {}").format(non_existent_db))
+        backup_file = os.path.join(db_backup_dir, f"{non_existent_db}.sql.gz")
+        return_code, stdout, stderr = self.command_runner.run(
+            f"/usr/bin/mysqldump -u {self.config.MYSQL_USER} -p{self.config.MYSQL_PASSWORD} {non_existent_db} | gzip > {backup_file}")
+        self._handle_error(f"Error: Database backup failed for {non_existent_db}!", stderr)
 
     def _backup_databases(self, databases, db_backup_dir):
         """
