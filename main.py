@@ -4,37 +4,37 @@ import socket
 import os
 from i18n import setup_translation, get_translation
 from config_loader import ConfigLoader
+from logger import Logger
 
 def main():
-    """
-    Main function to execute the backup script.
-    """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(script_dir)
 
-    print(f"Changed working directory to: {os.getcwd()}")
 
     server_name = socket.getfqdn()
-    config_loader = ConfigLoader(server_name)
-    config = config_loader.config
+    config = ConfigLoader(server_name).config
 
-    print(f"Configured language: {config.LANGUAGE}")
+
+    parser = argparse.ArgumentParser(description="Backup script for server")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument("--debug", action="store_true", help="Enable debug output")
+    args = parser.parse_args()
+
+    # Initialize the logger singleton
+    logger = Logger.get_instance(config.LOG_FILE, args.verbose, args.debug)
+
+    logger.debug_log(f"Changed working directory to: {os.getcwd()}")
+    logger.debug_log(f"Configured language: {config.LANGUAGE}")
+
     setup_translation(config.LANGUAGE)
 
-    # Now you can import other modules that use the translation function
     from backup_manager.backup_manager import BackupManager
     from backup_manager.repository_initializer import RepositoryInitializer
     from command_runner import CommandRunner
-    from logger import Logger
-
-    parser = argparse.ArgumentParser(description=get_translation()("Backup script for server"))
-    parser.add_argument("--verbose", action="store_true", help=get_translation()("Enable verbose output"))
-    args = parser.parse_args()
 
     repository_initializer = RepositoryInitializer(config)
     repository_initializer.ensure_directories()
 
-    logger = Logger(config.LOG_FILE, args.verbose)
     command_runner = CommandRunner(logger)
 
     repository_initializer.ensure_repository_initialized()
