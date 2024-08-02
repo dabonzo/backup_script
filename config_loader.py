@@ -1,7 +1,6 @@
 # config_loader.py
 import importlib.util
 import os
-
 from i18n import _
 
 class ConfigLoader:
@@ -11,7 +10,7 @@ class ConfigLoader:
     def __init__(self, server_name):
         """
         Initialize the ConfigLoader class.
-        :param server_name: The server's fully qualified domain name (FQDN).
+        :param server_name: Fully qualified domain name of the server.
         """
         self.server_name = server_name
         self.config = self.load_config()
@@ -19,7 +18,7 @@ class ConfigLoader:
     def load_config(self):
         """
         Load the configuration file.
-        :return: The loaded configuration module.
+        :return: Configuration module.
         """
         config_path = f'/root/backup_config_{self.server_name}.py'
         if not os.path.exists(config_path):

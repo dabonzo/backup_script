@@ -8,7 +8,7 @@ def generate_secure_password(length=20):
     """
     Generates a secure password.
     :param length: Length of the password.
-    :return: The generated password.
+    :return: Secure password.
     """
     alphabet = string.ascii_letters + string.digits + '-_'
     while True:
@@ -19,8 +19,8 @@ def generate_secure_password(length=20):
 def format_duration(duration):
     """
     Format a duration as a human-readable string.
-    :param duration: The duration to format.
-    :return: The formatted duration string.
+    :param duration: Duration to format.
+    :return: Formatted duration string.
     """
     total_seconds = int(duration.total_seconds())
     if total_seconds < 60:
@@ -36,11 +36,11 @@ def format_duration(duration):
 def log_and_email(backup_manager, logger, message, section=False, error=False):
     """
     Log a message and add it to the email body.
-    :param backup_manager: BackupManager object managing the backup operations.
-    :param logger: Logger object for logging messages.
-    :param message: The message to log and email.
-    :param section: Flag to indicate if the message is a section header.
-    :param error: Flag to indicate if the message is an error.
+    :param backup_manager: BackupManager instance.
+    :param logger: Logger instance.
+    :param message: Message to log and email.
+    :param section: Whether to format the message as a section header.
+    :param error: Whether the message is an error.
     """
     if section:
         formatted_message = f"<h2>{message}</h2>"
@@ -58,11 +58,11 @@ def log_and_email(backup_manager, logger, message, section=False, error=False):
 def is_restic_locked(repository, password_file, command_runner, logger):
     """
     Check if the Restic repository is locked.
-    :param repository: Path to the Restic repository.
-    :param password_file: Path to the password file.
-    :param command_runner: CommandRunner object to execute shell commands.
-    :param logger: Logger object for logging messages.
-    :return: True if the repository is locked, False otherwise.
+    :param repository: Restic repository path.
+    :param password_file: Path to the Restic password file.
+    :param command_runner: CommandRunner instance.
+    :param logger: Logger instance.
+    :return: Boolean indicating if the repository is locked.
     """
     check_lock_command = f"restic -r {repository} --password-file {password_file} list locks"
     return_code, stdout, stderr = command_runner.run(check_lock_command, verbose=True)
@@ -78,8 +78,8 @@ def is_restic_locked(repository, password_file, command_runner, logger):
 def get_dir_size(directory):
     """
     Get the total size of a directory.
-    :param directory: Path to the directory.
-    :return: The total size of the directory in bytes.
+    :param directory: Directory path.
+    :return: Total size of the directory in bytes.
     """
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(directory):
@@ -95,9 +95,9 @@ class BackupSizeCalculator:
     def __init__(self, config, command_runner, logger):
         """
         Initialize the BackupSizeCalculator class.
-        :param config: Configuration object containing backup settings.
-        :param command_runner: CommandRunner object to execute shell commands.
-        :param logger: Logger object for logging messages.
+        :param config: Configuration object.
+        :param command_runner: CommandRunner instance.
+        :param logger: Logger instance.
         """
         self.config = config
         self.command_runner = command_runner
@@ -106,7 +106,7 @@ class BackupSizeCalculator:
     def extract_backup_size(self, backup_size_line):
         """
         Extract the size of the backup from the output line.
-        :param backup_size_line: The output line containing the backup size.
+        :param backup_size_line: Line containing backup size information.
         :return: Tuple containing data transferred and data stored.
         """
         data_transferred = backup_size_line.split("Added to the repository:")[1].split(" (")[0].strip()
@@ -116,7 +116,7 @@ class BackupSizeCalculator:
     def get_uncompressed_size(self):
         """
         Get the uncompressed size of the backup.
-        :return: The uncompressed size of the backup.
+        :return: Uncompressed size of the backup.
         """
         stats_command = f"restic -r {self.config.RESTIC_REPOSITORY} --password-file {self.config.RESTIC_PASSWORD_FILE} stats --mode restore-size"
         return_code, stdout, stderr = self.command_runner.run(stats_command, verbose=True, timeout=300)
@@ -129,7 +129,7 @@ class BackupSizeCalculator:
     def get_compressed_size(self):
         """
         Get the compressed size of the backup.
-        :return: The compressed size of the backup.
+        :return: Compressed size of the backup.
         """
         du_command = f"du -sh {self.config.RESTIC_REPOSITORY}"
         return_code, stdout, stderr = self.command_runner.run(du_command, verbose=True, timeout=300)
@@ -140,7 +140,7 @@ class BackupSizeCalculator:
     def calculate_total_backup_size(self):
         """
         Calculate the total size of the backup directory.
-        :return: The total size of the backup directory in MB.
+        :return: Total size of the backup directory in MB.
         """
         backup_dir_size = get_dir_size(self.config.BASE_BACKUP_DIR)
         size_in_mb = backup_dir_size / (1024 * 1024)

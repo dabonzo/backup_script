@@ -1,5 +1,4 @@
 # backup_manager/email_notifier.py
-
 import os
 import smtplib
 from email import encoders
@@ -43,13 +42,30 @@ class EmailNotifier:
         msg.attach(MIMEText(body, 'html'))
 
         if attachment_path:
-            with open(attachment_path, "rb") as attachment:
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(attachment.read())
-                encoders.encode_base64(part)
-                part.add_header("Content-Disposition", f"attachment; filename= {os.path.basename(attachment_path)}")
-                msg.attach(part)
+            self._attach_file(msg, attachment_path)
 
+        self._send(msg, from_, to)
+
+    def _attach_file(self, msg, attachment_path):
+        """
+        Attach a file to the email.
+        :param msg: MIMEMultipart message object.
+        :param attachment_path: Path to the attachment file.
+        """
+        with open(attachment_path, "rb") as attachment:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(attachment.read())
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition", f"attachment; filename= {os.path.basename(attachment_path)}")
+            msg.attach(part)
+
+    def _send(self, msg, from_, to):
+        """
+        Send the email.
+        :param msg: MIMEMultipart message object.
+        :param from_: Sender email address.
+        :param to: Recipient email address.
+        """
         with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
             server.starttls()
             server.login(self.smtp_username, self.smtp_password)

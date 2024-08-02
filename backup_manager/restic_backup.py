@@ -1,7 +1,6 @@
 # backup_manager/restic_backup.py
 import os
 from datetime import datetime
-
 from i18n import _
 from utils import format_duration, log_and_email, is_restic_locked, BackupSizeCalculator
 
@@ -12,10 +11,10 @@ class ResticBackup:
     def __init__(self, config, logger, command_runner, backup_manager):
         """
         Initialize the ResticBackup class.
-        :param config: Configuration object containing backup settings.
-        :param logger: Logger object for logging messages.
-        :param command_runner: CommandRunner object to execute shell commands.
-        :param backup_manager: BackupManager object to manage backup operations.
+        :param config: Configuration object.
+        :param logger: Logger object.
+        :param command_runner: CommandRunner object.
+        :param backup_manager: BackupManager object.
         """
         self.config = config
         self.logger = logger
@@ -35,28 +34,40 @@ class ResticBackup:
                 backup_paths.update(paths)
         return list(backup_paths)
 
-    def apply_retention_policy(self, repository, password_file):
+    def apply_retention_policy(self):
         """
         Apply the retention policy to the Restic repository.
-        :param repository: Path to the Restic repository.
-        :param password_file: Path to the password file.
         """
         log_and_email(self.backup_manager, self.logger, _("Applying retention policy..."))
 
-        if is_restic_locked(repository, password_file, self.command_runner, self.logger):
-            error_message = _("Error: Restic repository is locked! Cannot apply retention policy. Use `restic unlock` to unlock the repository.")
-            log_and_email(self.backup_manager, self.logger, error_message, error=True)
-            self.backup_manager.backup_success = False
+        if is_restic_locked(self.config.RESTIC_REPOSITORY, self.config.RESTIC_PASSWORD_FILE, self.command_runner, self.logger):
+            self._handle_locked_repository("Error: Restic repository is locked! Cannot apply retention policy.")
             return
-        forget_command = f"restic -r {repository} --password-file {password_file} forget --keep-daily 7 --keep-weekly 4 --keep-monthly 12 --keep-yearly 1 --prune"
+
+        forget_command = f"restic -r {self.config.RESTIC_REPOSITORY} --password-file {self.config.RESTIC_PASSWORD_FILE} forget --keep-daily 7 --keep-weekly 4 --keep-monthly 12 --keep-yearly 1 --prune"
+        self._run_retention_command(forget_command)
+
+    def _handle_locked_repository(self, message):
+        """
+        Handle the case where the Restic repository is locked.
+        :param message: Error message.
+        """
+        error_message = _(message + " Use `restic unlock` to unlock the repository.")
+        log_and_email(self.backup_manager, self.logger, error_message, error=True)
+        self.backup_manager.backup_success = False
+
+    def _run_retention_command(self, forget_command):
+        """
+        Run the Restic forget command to apply the retention policy.
+        :param forget_command: Command to apply the retention policy.
+        """
         retention_start_time = datetime.now()
         return_code, stdout, stderr = self.command_runner.run(forget_command, verbose=True, timeout=600)
         retention_end_time = datetime.now()
         retention_duration = format_duration(retention_end_time - retention_start_time)
 
         if return_code != 0:
-            error_message = _("Error: Retention policy application failed! See log for details at line {}.").format(
-                len(open(self.config.LOG_FILE).readlines()) + 1)
+            error_message = _("Error: Retention policy application failed! See log for details at line {}.").format(len(open(self.config.LOG_FILE).readlines()) + 1)
             log_and_email(self.backup_manager, self.logger, error_message, error=True)
             self.backup_manager.backup_success = False
         else:
@@ -66,7 +77,7 @@ class ResticBackup:
     def should_run_backup():
         """
         Determine the type of backup to run based on the current date.
-        :return: The type of backup to run ('daily', 'weekly', or 'monthly').
+        :return: Type of backup to run ('monthly', 'weekly', or 'daily').
         """
         today = datetime.now().day
         if today == 1:
@@ -82,41 +93,62 @@ class ResticBackup:
         """
         backup_type = self.should_run_backup()
         if backup_type:
-            log_and_email(self.backup_manager, self.logger, f"Restic {backup_type.capitalize()} " + _("Backup"), section=True)
-            log_and_email(self.backup_manager, self.logger, _("Starting Restic {} backup...").format(backup_type))
+            self._start_backup_process(backup_type)
 
-            # Check if the repository is locked before starting the backup
-            if is_restic_locked(self.config.RESTIC_REPOSITORY, self.config.RESTIC_PASSWORD_FILE, self.command_runner, self.logger):
-                error_message = _("Error: Restic repository is locked! Cannot start backup. Use `restic unlock` to unlock the repository.")
-                log_and_email(self.backup_manager, self.logger, error_message, error=True)
-                self.backup_manager.backup_success = False
-                return
-            restic_start_time = datetime.now()
-            backup_command = f"restic -r {self.config.RESTIC_REPOSITORY} --password-file {self.config.RESTIC_PASSWORD_FILE} backup {' '.join(self.backup_paths)}"
-            return_code, stdout, stderr = self.command_runner.run(backup_command, verbose=True, timeout=3600)
-            restic_end_time = datetime.now()
-            restic_duration = format_duration(restic_end_time - restic_start_time)
-            if return_code != 0:
-                error_message = _("Error: Restic {} backup failed! See log for details at line {}.").format(backup_type, len(open(self.config.LOG_FILE).readlines()) + 1)
-                log_and_email(self.backup_manager, self.logger, error_message, error=True)
-                self.backup_manager.backup_success = False
-            else:
-                log_and_email(self.backup_manager, self.logger, _("Restic {} backup completed successfully in {}.").format(backup_type, restic_duration))
-                files_processed = stdout.count("processed")
-                backup_size_line = next((line for line in stdout.splitlines() if "Added to the repository:" in line), None)
-                if backup_size_line:
-                    data_transferred, data_stored = self.size_calculator.extract_backup_size(backup_size_line)
-                    log_and_email(self.backup_manager, self.logger, _("Files processed: {}, Data transferred: {}, Data stored: {}").format(files_processed, data_transferred, data_stored))
-                else:
-                    log_and_email(self.backup_manager, self.logger, _("Files processed: {}, Backup size: unknown").format(files_processed))
+    def _start_backup_process(self, backup_type):
+        """
+        Start the Restic backup process for the specified backup type.
+        :param backup_type: Type of backup to run.
+        """
+        log_and_email(self.backup_manager, self.logger, f"Restic {backup_type.capitalize()} " + _("Backup"), section=True)
+        log_and_email(self.backup_manager, self.logger, _("Starting Restic {} backup...").format(backup_type))
 
-            log_and_email(self.backup_manager, self.logger, _("Backup Size Information"), section=True)
-            uncompressed_size = self.size_calculator.get_uncompressed_size()
-            compressed_size = self.size_calculator.get_compressed_size()
-            total_backup_size = self.size_calculator.calculate_total_backup_size()
+        if is_restic_locked(self.config.RESTIC_REPOSITORY, self.config.RESTIC_PASSWORD_FILE, self.command_runner, self.logger):
+            self._handle_locked_repository("Error: Restic repository is locked! Cannot start backup.")
+            return
 
-            log_and_email(self.backup_manager, self.logger, _("Restic repository uncompressed size: {}").format(uncompressed_size))
-            log_and_email(self.backup_manager, self.logger, _("Restic repository compressed size: {}").format(compressed_size))
-            log_and_email(self.backup_manager, self.logger, _("Total size of backup folder: {:.2f} MB").format(total_backup_size))
+        restic_start_time = datetime.now()
+        backup_command = f"restic -r {self.config.RESTIC_REPOSITORY} --password-file {self.config.RESTIC_PASSWORD_FILE} backup {' '.join(self.backup_paths)}"
+        return_code, stdout, stderr = self.command_runner.run(backup_command, verbose=True, timeout=3600)
+        restic_end_time = datetime.now()
+        restic_duration = format_duration(restic_end_time - restic_start_time)
 
-            self.apply_retention_policy(self.config.RESTIC_REPOSITORY, self.config.RESTIC_PASSWORD_FILE)
+        if return_code != 0:
+            error_message = _("Error: Restic {} backup failed! See log for details at line {}.").format(backup_type, len(open(self.config.LOG_FILE).readlines()) + 1)
+            log_and_email(self.backup_manager, self.logger, error_message, error=True)
+            self.backup_manager.backup_success = False
+        else:
+            self._log_backup_success(stdout, backup_type, restic_duration)
+
+        self._log_backup_size_info()
+
+        self.apply_retention_policy()
+
+    def _log_backup_success(self, stdout, backup_type, restic_duration):
+        """
+        Log the success of the Restic backup process.
+        :param stdout: Standard output from the backup command.
+        :param backup_type: Type of backup that was run.
+        :param restic_duration: Duration of the backup process.
+        """
+        log_and_email(self.backup_manager, self.logger, _("Restic {} backup completed successfully in {}.").format(backup_type, restic_duration))
+        files_processed = stdout.count("processed")
+        backup_size_line = next((line for line in stdout.splitlines() if "Added to the repository:" in line), None)
+        if backup_size_line:
+            data_transferred, data_stored = self.size_calculator.extract_backup_size(backup_size_line)
+            log_and_email(self.backup_manager, self.logger, _("Files processed: {}, Data transferred: {}, Data stored: {}").format(files_processed, data_transferred, data_stored))
+        else:
+            log_and_email(self.backup_manager, self.logger, _("Files processed: {}, Backup size: unknown").format(files_processed))
+
+    def _log_backup_size_info(self):
+        """
+        Log information about the backup size.
+        """
+        log_and_email(self.backup_manager, self.logger, _("Backup Size Information"), section=True)
+        uncompressed_size = self.size_calculator.get_uncompressed_size()
+        compressed_size = self.size_calculator.get_compressed_size()
+        total_backup_size = self.size_calculator.calculate_total_backup_size()
+
+        log_and_email(self.backup_manager, self.logger, _("Restic repository uncompressed size: {}").format(uncompressed_size))
+        log_and_email(self.backup_manager, self.logger, _("Restic repository compressed size: {}").format(compressed_size))
+        log_and_email(self.backup_manager, self.logger, _("Total size of backup folder: {:.2f} MB").format(total_backup_size))

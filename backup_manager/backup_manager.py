@@ -7,9 +7,8 @@ from backup_manager.email_notifier import EmailNotifier
 from backup_manager.log_cleaner import LogCleaner
 from backup_manager.restic_backup import ResticBackup
 from backup_manager.software_list_generator import SoftwareListGenerator
-from utils import format_duration
-from i18n import get_translation
-_ = get_translation()
+from utils import format_duration, log_and_email
+from i18n import _
 
 class BackupManager:
     """
@@ -18,9 +17,9 @@ class BackupManager:
     def __init__(self, config, logger, command_runner):
         """
         Initialize the BackupManager class.
-        :param config: Configuration object containing backup settings.
-        :param logger: Logger object for logging messages.
-        :param command_runner: CommandRunner object to execute shell commands.
+        :param config: Configuration object.
+        :param logger: Logger object.
+        :param command_runner: CommandRunner object.
         """
         self.config = config
         self.logger = logger
@@ -32,7 +31,6 @@ class BackupManager:
         self.database_backup = DatabaseBackup(config, logger, command_runner, self)
         self.restic_backup = ResticBackup(config, logger, command_runner, self)
         self.software_list_generator = SoftwareListGenerator(config, logger, command_runner, self)
-
         self.log_cleaner = LogCleaner(config, logger)
 
     def backup(self):
@@ -73,9 +71,6 @@ class BackupManager:
 
         email_notifier = EmailNotifier(self.config.SMTP_SERVER, self.config.SMTP_PORT, self.config.SMTP_USERNAME, self.config.SMTP_PASSWORD)
 
-        if not self.backup_success:
-            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH, self.config.LOG_FILE)
-        else:
-            email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH)
+        email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH, self.config.LOG_FILE if not self.backup_success else None)
 
         os.remove(self.config.EMAIL_BODY_PATH)

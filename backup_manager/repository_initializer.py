@@ -1,5 +1,4 @@
 # backup_manager/repository_initializer.py
-
 import os
 import secrets
 import string
@@ -12,7 +11,7 @@ class RepositoryInitializer:
     def __init__(self, config):
         """
         Initialize the RepositoryInitializer class.
-        :param config: Configuration object containing backup settings.
+        :param config: Configuration object.
         """
         self.config = config
 

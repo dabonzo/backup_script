@@ -1,5 +1,4 @@
 # command_runner.py
-
 import subprocess
 from i18n import _
 
@@ -17,8 +16,8 @@ class CommandRunner:
     def run(self, command, verbose=False, timeout=600):
         """
         Run a shell command.
-        :param command: The command to run.
-        :param verbose: Flag to enable verbose output.
+        :param command: Command to execute.
+        :param verbose: Whether to print command output to stdout.
         :param timeout: Timeout for the command execution.
         :return: Tuple containing return code, stdout, and stderr.
         """

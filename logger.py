@@ -1,5 +1,4 @@
 # logger.py
-
 from datetime import datetime
 
 class Logger:
@@ -10,7 +9,7 @@ class Logger:
         """
         Initialize the Logger class.
         :param log_file: Path to the log file.
-        :param verbose: Flag to enable verbose output.
+        :param verbose: Whether to print log messages to stdout.
         """
         self.log_file = log_file
         self.verbose = verbose
@@ -18,8 +17,8 @@ class Logger:
     def log(self, message, section=False):
         """
         Log a message.
-        :param message: The message to log.
-        :param section: Flag to indicate if the message is a section header.
+        :param message: Message to log.
+        :param section: Whether to format the message as a section header.
         """
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         formatted_message = f"{timestamp} - {message}" if not section else f"\n{'#' * 22}\n# {message.center(18)} #\n{'#' * 22}\n"
