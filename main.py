@@ -18,6 +18,7 @@ def main():
     parser = argparse.ArgumentParser(description="Backup script for server")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
     parser.add_argument("--debug", action="store_true", help="Enable debug output")
+    parser.add_argument("--simulate-failures", action="store_true", help="Simulate failures in the backup process")
     args = parser.parse_args()
 
     # Initialize the logger singleton
@@ -25,6 +26,7 @@ def main():
 
     logger.debug_log(f"Changed working directory to: {os.getcwd()}")
     logger.debug_log(f"Configured language: {config.LANGUAGE}")
+    config.SIMULATE_FAILURES = args.simulate_failures
 
     setup_translation(config.LANGUAGE)
 
