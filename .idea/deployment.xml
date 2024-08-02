@@ -5,7 +5,7 @@
       <paths name="redgas008_backup">
         <serverdata>
           <mappings>
-            <mapping deploy="/backup/script" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/backup/script_dev/backup_script" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

@@ -2,7 +2,6 @@
 import argparse
 import socket
 import os
-import sys
 from i18n import setup_translation
 
 def main():
