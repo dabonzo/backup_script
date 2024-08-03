@@ -2,6 +2,7 @@
 import os
 import random
 from datetime import datetime
+from i18n import _
 
 from logger import Logger
 from .base_backup import BaseBackup

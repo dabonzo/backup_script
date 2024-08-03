@@ -7,6 +7,7 @@ from .log_cleaner import LogCleaner
 from .restic_backup import ResticBackup
 from .software_list_generator import SoftwareListGenerator
 from utils import format_duration
+from i18n import _
 
 class BackupManager:
     """

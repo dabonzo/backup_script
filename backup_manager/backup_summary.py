@@ -1,6 +1,5 @@
 # backup_summary.py
 import os
-import sys
 import re
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText

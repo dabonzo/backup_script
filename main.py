@@ -2,7 +2,7 @@
 import argparse
 import socket
 import os
-from i18n import setup_translation, get_translation
+from i18n import setup_translation
 from config_loader import ConfigLoader
 from logger import Logger
 

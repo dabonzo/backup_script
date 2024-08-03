@@ -1,5 +1,4 @@
 # backup_manager/base_backup.py
-from datetime import datetime
 from i18n import _
 
 class BaseBackup:
