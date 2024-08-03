@@ -2,6 +2,8 @@
 import os
 import random
 from datetime import datetime
+
+from logger import Logger
 from .base_backup import BaseBackup
 
 
@@ -33,7 +35,8 @@ class DatabaseBackup(BaseBackup):
         os.makedirs(db_backup_dir, exist_ok=True)
 
         # Simulate failure
-        simulate_failure = self.config.SIMULATE_FAILURES # and random.choice([True, False])
+        simulate_failure = self.config.SIMULATE_FAILURES
+        self.logger.debug_log(f"Simulate failure: {simulate_failure}")
 
         if simulate_failure:
             self._simulate_failure(db_backup_dir)
