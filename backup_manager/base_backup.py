@@ -1,5 +1,6 @@
 # backup_manager/base_backup.py
 from i18n import _
+from utils import handle_error
 
 class BaseBackup:
     """
@@ -22,8 +23,4 @@ class BaseBackup:
         :param message: Error message.
         :param stderr: Error output.
         """
-        error_message = _(message + " See log for details at line {}.").format(len(open(self.config.LOG_FILE).readlines()) + 1)
-        self.backup_manager.email_body += f"<strong style='color: red;'>{error_message}</strong><br>\n"
-        self.logger.log(f"{message} {stderr}")
-        self.backup_manager.error_lines.append(error_message)
-        self.backup_manager.backup_success = False
+        handle_error(message, stderr, self.config, self.logger, self.backup_manager)

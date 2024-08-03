@@ -13,7 +13,7 @@ def generate_secure_password(length=20):
     alphabet = string.ascii_letters + string.digits + '-_'
     while True:
         password = ''.join(secrets.choice(alphabet) for _ in range(length))
-        if (sum(c.islower() for c in password) >= 4 and sum(c.isupper() for c in password) >= 4 and sum(c.isdigit() for c in password) >= 4 and sum(c in '-_' for c in password) >= 2):
+        if sum(c.islower() for c in password) >= 4 and sum(c.isupper() for c in password) >= 4 and sum(c.isdigit() for c in password) >= 4 and sum(c in '-_' for c in password) >= 2:
             return password
 
 def format_duration(duration):
@@ -145,3 +145,18 @@ class BackupSizeCalculator:
         backup_dir_size = get_dir_size(self.config.BASE_BACKUP_DIR)
         size_in_mb = backup_dir_size / (1024 * 1024)
         return size_in_mb
+
+def handle_error(message, stderr, config, logger, backup_manager):
+    """
+    Handle an error during the backup process.
+    :param message: Error message.
+    :param stderr: Error output.
+    :param config: Configuration object.
+    :param logger: Logger object.
+    :param backup_manager: BackupManager object.
+    """
+    error_message = _(message + " See log for details at line {}.").format(len(open(config.LOG_FILE).readlines()) + 1)
+    backup_manager.email_body += f"<strong style='color: red;'>{error_message}</strong><br>\n"
+    logger.log(f"{message} {stderr}")
+    backup_manager.error_lines.append(error_message)
+    backup_manager.backup_success = False
