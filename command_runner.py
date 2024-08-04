@@ -13,7 +13,7 @@ class CommandRunner:
         """
         self.logger = logger
 
-    def run(self, command, verbose=False, timeout=600):
+    def run(self, command, verbose=False, timeout=3600):
         """
         Run a shell command.
         :param command: Command to execute.

@@ -119,7 +119,7 @@ class BackupSizeCalculator:
         :return: Uncompressed size of the backup.
         """
         stats_command = f"restic -r {self.config.RESTIC_REPOSITORY} --password-file {self.config.RESTIC_PASSWORD_FILE} stats --mode restore-size"
-        return_code, stdout, stderr = self.command_runner.run(stats_command, verbose=True, timeout=300)
+        return_code, stdout, stderr = self.command_runner.run(stats_command, verbose=True, timeout=3600)
         if return_code == 0:
             uncompressed_size_line = next((line for line in stdout.splitlines() if "Total Size" in line), None)
             if uncompressed_size_line:
@@ -132,7 +132,7 @@ class BackupSizeCalculator:
         :return: Compressed size of the backup.
         """
         du_command = f"du -sh {self.config.RESTIC_REPOSITORY}"
-        return_code, stdout, stderr = self.command_runner.run(du_command, verbose=True, timeout=300)
+        return_code, stdout, stderr = self.command_runner.run(du_command, verbose=True, timeout=3600)
         if return_code == 0:
             return stdout.split()[0]
         return _("unknown")

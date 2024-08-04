@@ -65,7 +65,7 @@ class ResticBackup(BaseBackup):
         :param forget_command: Command to apply the retention policy.
         """
         retention_start_time = datetime.now()
-        return_code, stdout, stderr = self.command_runner.run(forget_command, verbose=True, timeout=600)
+        return_code, stdout, stderr = self.command_runner.run(forget_command, verbose=True, timeout=3600)
         retention_end_time = datetime.now()
         retention_duration = format_duration(retention_end_time - retention_start_time)
 
