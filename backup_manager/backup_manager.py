@@ -79,3 +79,22 @@ class BackupManager:
             email_notifier.send_email(email_subject, self.config.EMAIL_TO, self.config.EMAIL_FROM, self.config.EMAIL_BODY_PATH)
 
         os.remove(self.config.EMAIL_BODY_PATH)
+        self._write_status_file(start_time, end_time, total_duration)
+
+    def _write_status_file(self, start_time, end_time, total_duration):
+        """
+        Write the status of the backup to a file.
+        :param start_time: The start time of the backup.
+        :param end_time: The end time of the backup.
+        :param total_duration: The total duration of the backup.
+        """
+        status = "Success" if self.backup_success else "Failed"
+        status_file_path = os.path.join(self.config.STATUS_FILE_DIR, f"backup_status_{self.config.SERVER_NAME}_{start_time.strftime('%Y%m%d%H%M%S')}.txt")
+
+        with open(status_file_path, "w") as status_file:
+            status_file.write(f"Server: {self.config.SERVER_NAME}\n")
+            status_file.write(f"Status: {status}\n")
+            status_file.write(f"Start Time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+            status_file.write(f"End Time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+            status_file.write(f"Duration: {total_duration}\n")
+            status_file.write(f"Log File: {self.config.LOG_FILE}\n")
